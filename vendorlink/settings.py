@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework_simplejwt",
     "rest_framework",  # install package name.
     "user",  # this is the app for the user.
     "phonenumber_field",  # install package name.
@@ -128,3 +129,64 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # USER MODEL REGISTRSTION:
 AUTH_USER_MODEL = "user.customeuser"
+
+# connection of the swt system.
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    )
+}
+# setting of the JWT.
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=240),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=10),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
+    "JTI_CLAIM": "jti",
+    "USER_ID_FIELD": "user_id",  # Tells JWT to use `user_id` field instead of `id`
+    "USER_ID_CLAIM": "user_id",  # Adds `user_id` to the token payload instead of `id`
+}
+from datetime import timedelta
+
+PASSWORD_RESET_TIMEOUT = 300
+
+
+# password change token life time settings.
+PASSWORD_RESET_TIMEOUT = 900  # 900 is in the second that is 15 min life time of the token to change the password for the user.
+
+
+# email testing using the gmail.
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "ayushkandel7519@gmail.com"
+EMAIL_HOST_PASSWORD = "ueayslphrkhpfahl"
+EMAIL_USE_TLS = True
+
+import os
+
+# this is for the image part
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+
+REST_FRAMEWORK = {
+    # other settings...
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.UserRateThrottle",
+        "rest_framework.throttling.AnonRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "user": "5/minute",  # Authenticated users: 5 requests per minute
+        "anon": "3/minute",  # Anonymous users: 3 requests per minute
+        "forgot_password": "5/hour",  # Custom throttle scope for forgot password
+    },
+}

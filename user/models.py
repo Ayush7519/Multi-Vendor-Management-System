@@ -15,9 +15,9 @@ class UserManager(BaseUserManager):
         last_name,
         role,
         phone_number,
-        # image,
         password=None,
         password2=None,
+        **extra_fields,
     ):
         if not email:
             raise ValueError("Users must have an email address")
@@ -29,8 +29,9 @@ class UserManager(BaseUserManager):
             last_name=last_name,
             role=role,
             phone_number=phone_number,
-            # image=image,
+            **extra_fields,
         )
+        user.is_active = True
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -86,13 +87,17 @@ class customeuser(AbstractBaseUser):
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     phone_number = PhoneNumberField(region="NP", blank=True, null=True)
-    image = models.ImageField(upload_to=None, blank=True, null=True)
+    image = models.ImageField(upload_to="user_profile_picture/", blank=True, null=True)
     is_verified = models.BooleanField(default=False)
 
     objects = UserManager()
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "first_name", "last_name", "phone_number"]
+
+    @property
+    def id(self):
+        return self.user_id
 
     def __str__(self):
         return self.email
@@ -115,3 +120,26 @@ class customeuser(AbstractBaseUser):
 
     def __str__(self):
         return self.username
+
+
+# this is the model for the vendor profile(additional data.)
+class VendorProfile(models.Model):
+    user = models.OneToOneField(
+        customeuser,
+        on_delete=models.CASCADE,
+        related_name="vendor_profile",
+        blank=True,
+        null=True,
+    )
+    shop_name = models.CharField(max_length=100, blank=False, null=False)
+    shop_logo = models.ImageField(upload_to="vender_picture/", blank=True, null=True)
+    descriptioin = models.TextField(max_length=500, blank=True, null=True)
+    address = models.CharField(max_length=100, blank=False, null=False)
+    phone_number = PhoneNumberField(region="NP", blank=False, null=False)
+    website = models.URLField(max_length=100, blank=True, null=True)
+    gst_number = models.CharField(max_length=100, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.user.username

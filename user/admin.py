@@ -22,3 +22,22 @@ class customeuseradminmodel(admin.ModelAdmin):
 
 
 admin.site.register(models.customeuser, customeuseradminmodel)
+
+
+# this is for the vendor profile.
+class VendorProfileAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "shop_name",
+        "shop_logo",
+        "descriptioin",
+        "address",
+        "phone_number",
+        "website",
+        "gst_number",
+        "created_at",
+        "updated_at",
+    )
+
+
+admin.site.register(models.VendorProfile, VendorProfileAdmin)
