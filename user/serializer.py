@@ -159,12 +159,12 @@ class UserPasswordChange_Serializer(serializers.ModelSerializer):
 
                 # sending the mail to the user after the password is changed.
                 data = {
-                    "subject": "Password Changed Successfully - Multi-Vendor Management System",
+                    "subject": "Password Changed Successfully -Vendora!",
                     "body": f"Hi {user.username},\n\n"
                     "We wanted to let you know that your account password has been successfully changed.\n\n"
                     "If you did not make this change, please contact our support team immediately.\n\n"
                     "Thank you,\n"
-                    "Multi-Vendor Management System Team",
+                    "The Vendora Team",
                     "to_email": user.email,
                 }
                 Util.send_email(data)
@@ -197,22 +197,20 @@ class LinkSendingUser_Serializer(serializers.ModelSerializer):
                     link = "http://127.0.0.1:3000/user/reset/" + uid + "/" + token
 
                     # now making the mail data.
-                    body = (
-                        f"Dear {user_data.username},\n\n"
-                        "We received a request to reset your password for the Multi-Vendor Management System.\n\n"
-                        f"Please click the link below to set a new password:\n{link}\n\n"
-                        "Note: This link will expire in 5 minutes for your account's security.\n\n"
-                        "If you did not request this change, please disregard this email or contact our support team immediately.\n\n"
-                        "Best regards,\n"
-                        "Multi-Vendor Management System Team"
+                    context = {
+                        "subject": "Reset Your Password - Vendora",
+                        "username": user_data.username,
+                        "reset_link": link,
+                        "plain_text": f"Dear {user_data.username}, Please reset your password here: {link}",
+                    }
+
+                    Util.send_email1(
+                        subject=context["subject"],
+                        to_email=user_data.email,
+                        template_name="emails/password_reset.html",
+                        context=context,
                     )
 
-                    data = {
-                        "subject": "Reset Your Password - Multi-Vendor Management System",
-                        "body": body,
-                        "to_email": user_data.email,
-                    }
-                    Util.send_email(data)
                 return attrs
             else:
                 raise serializers.ValidationError("Your Email not found")
@@ -266,12 +264,12 @@ class UserPasswordChangeMail_serializer(serializers.ModelSerializer):
                 user_data.set_password(password)
                 user_data.save()
                 data = {
-                    "subject": "Password Changed Successfully - Multi-Vendor Management System",
+                    "subject": "Password Changed Successfully -Vendora!",
                     "body": f"Hi {user_data.username},\n\n"
                     "We wanted to let you know that your account password has been successfully changed.\n\n"
                     "If you did not make this change, please contact our support team immediately.\n\n"
                     "Thank you,\n"
-                    "Multi-Vendor Management System Team",
+                    "The Vendora Team",
                     "to_email": user_data.email,
                 }
                 Util.send_email(data)

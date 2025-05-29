@@ -54,37 +54,44 @@ class UserRegistrationView(APIView):
                 with transaction.atomic():
                     user = serializer.save()
                     if user_role in ("C", "A"):
-                        data = {
-                            "subject": "Welcome to Multi-Vendor Management System!",
-                            "body": (
-                                f"Hello {user.username},\n\n"
-                                "Thank you for registering on our Multi-Vendor Management System platform.\n"
-                                "Your account has been successfully created.\n\n"
-                                "We’re excited to have you onboard!\n\n"
-                                "Best regards,\n"
-                                "The Multi-Vendor Management System Team"
-                            ),
-                            "to_email": user.email,
+                        context = {
+                            "subject": "Welcome to Vendora!",
+                            "username": user.username,
+                            "plain_text": f"Hello {user.username}, Thank you for registering on Vendora! Your account has been successfully created.",
                         }
-                        Util.send_email(data)
+
+                        Util.send_email1(
+                            subject=context["subject"],
+                            to_email=user.email,
+                            template_name="emails/welcome_email.html",
+                            context=context,
+                        )
                     else:
-                        data = {
-                            "subject": "Vendor Registration Received – Multi-Vendor Management System",
-                            "body": (
-                                f"Dear {user.username},\n\n"
-                                "Thank you for submitting your registration request to join the Multi-Vendor Management System.\n\n"
+                        context = {
+                            "subject": "Vendor Registration Received - Vendora!",
+                            "username": user.username,
+                            "body_text": (
+                                "Thank you for submitting your registration request to join Vendora!\n\n"
                                 "We have received your application and it is currently under review by our team.\n"
                                 "Our verification process ensures that all vendor accounts meet the quality and compliance standards of our platform.\n\n"
                                 "You will receive a confirmation email once your vendor account has been approved.\n"
                                 "This typically takes up to 24–48 hours.\n\n"
-                                "We appreciate your patience and look forward to partnering with you.\n\n"
+                                "We appreciate your patience and look forward to partnering with you."
+                            ),
+                            "signature": (
                                 "Warm regards,\n"
                                 "Vendor Support Team\n"
-                                "Multi-Vendor Management System"
+                                "The Vendora Team"
                             ),
-                            "to_email": user.email,
                         }
-                        Util.send_email(data)
+
+                        Util.send_email1(
+                            subject=context["subject"],
+                            to_email=user.email,
+                            template_name="emails/vendor_registration_received.html",
+                            context=context,
+                        )
+
                 token = user_generate_token(user)
                 return Response(
                     {

@@ -1,0 +1,19 @@
+{% extends "emails/base_email.html" %}
+
+{% block title %}Vendor Registration Received - Vendora{% endblock %}
+
+{% block content %}
+<p>Dear {{ username }},</p>
+
+<p>Thank you for submitting your registration request to join Vendora!</p>
+
+<p>We have received your application and it is currently under review by our team. Our verification process ensures that all vendor accounts meet the quality and compliance standards of our platform.</p>
+
+<p>You will receive a confirmation email once your vendor account has been approved. This typically takes up to 24–48 hours.</p>
+
+<p>We appreciate your patience and look forward to partnering with you.</p>
+
+<p>Warm regards,<br/>
+Vendor Support Team<br/>
+The Vendora Team</p>
+{% endblock %}

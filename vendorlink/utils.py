@@ -24,7 +24,7 @@ class Util:
             "Once your profile is set up, you can log in and start managing your vendor activities.\n\n"
             "Thank you for joining us!\n\n"
             "Best regards,\n"
-            "VendorLink Team"
+            "Vendora"
         )
         email = EmailMessage(
             subject=subject,
@@ -32,4 +32,24 @@ class Util:
             from_email=os.environ.get("EMAIL_FROM"),
             to=[user.email],
         )
+        email.send()
+
+
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+
+
+class Util:
+    @staticmethod
+    def send_email1(subject, to_email, template_name, context):
+        # Render the HTML email content
+        html_content = render_to_string(template_name, context)
+
+        # Generate plain-text fallback from context if needed (optional)
+        text_content = context.get("plain_text", "Please view this email in HTML.")
+
+        # Compose email
+        email = EmailMultiAlternatives(subject, text_content, to=[to_email])
+        email.attach_alternative(html_content, "text/html")
+
         email.send()
