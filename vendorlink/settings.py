@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "rest_framework",  # install package name.
     "user",  # this is the app for the user.
+    "product",  # this is the app for the product.
     "phonenumber_field",  # install package name.
     "phonenumbers",
 ]
