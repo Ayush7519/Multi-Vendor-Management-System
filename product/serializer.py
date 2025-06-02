@@ -90,6 +90,7 @@ class ProductList_Serializer(serializers.ModelSerializer):
             "average_rating",
             "total_reviews",
             "views",
+            "vendor_views",
             "created_at",
             "updated_at",
         ]

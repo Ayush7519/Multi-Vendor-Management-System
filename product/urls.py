@@ -69,4 +69,20 @@ urlpatterns = [
         views.VendorProductUpdateView.as_view(),
         name="path to update the single product by the vendor only.",
     ),
+    ##############################################################################################
+    path(
+        "customer/product-list/",
+        views.UserProductList.as_view(),
+        name="path to see all the products of the vendor in the website",
+    ),
+    path(
+        "customer/product-detail-view/<uuid:product_id>/",
+        views.SingleProductCustomerView.as_view(),
+        name="path to see the detail data of the product",
+    ),
+    path(
+        "customer/product-search/",
+        views.UserSearchProductView.as_view(),
+        name="path to search the product for the customer",
+    ),
 ]

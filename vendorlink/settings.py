@@ -193,3 +193,11 @@ REST_FRAMEWORK = {
         "forgot_password": "5/hour",  # Custom throttle scope for forgot password
     },
 }
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+    }
+}

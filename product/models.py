@@ -76,6 +76,7 @@ class Product(models.Model):
     average_rating = models.FloatField(default=0.0)
     total_reviews = models.IntegerField(default=0)
     views = models.PositiveIntegerField(default=0)
+    vendor_views = models.PositiveIntegerField(default=0, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
