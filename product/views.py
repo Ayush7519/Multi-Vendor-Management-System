@@ -512,3 +512,6 @@ class TagsDeleteView(generics.DestroyAPIView):
     renderer_classes = [UserRenderer]
     serializer_class = s.Tags_Serializer
     queryset = models.Tag.objects.all()
+
+
+########################################################################################

@@ -62,4 +62,6 @@ urlpatterns = [
         views.UserPasswordChangeMailView.as_view(),
         name="path to reset the password through the mail",
     ),
+    ##############################################################################################
+    # path("", views.home_view),
 ]

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vendora - Multi-Vendor E-commerce System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f9f9f9;
+            padding: 20px;
+            color: #333;
+        }
+        #prevBtn, #nextBtn {
+            padding: 8px 16px;
+            margin: 5px;
+            background-color: #3b82f6;
+            border: none;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        #prevBtn:disabled, #nextBtn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        .container {
+            max-width: 960px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        img.logo {
+            max-width: 150px;
+            display: block;
+            margin: auto;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #222;
+        }
+        .section {
+            margin-top: 30px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        .api-card {
+            background: #f1f5f9;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-left: 4px solid #3b82f6;
+            border-radius: 6px;
+        }
+        .post_method {
+            font-weight: bold;
+            color: #10b981;
+        }
+        .get_method{
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .update_method{
+            font-weight: bold;
+            color: #f97316;
+        }
+        .deletet_method{
+            font-weight: bold;
+            color: #ef4444;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background: #f0f0f0;
+        }
+        .header-images {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .side-logo {
+            max-width: 120px;
+            border-radius: 8px;
+        }
+        
+        .center-text {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .center-text h1,
+        .center-text h2 {
+            margin: 0;
+            padding: 5px 0;
+        }
+        .gradient-title {
+            font-size: 3rem;
+            text-align: center;
+            background: linear-gradient(to right, #facc15, #22c55e, #3b82f6); /* yellow, green, blue */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            margin: 0;
+        }        
+        
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const apiCards = document.querySelectorAll('.api-card');
+            const perPage = 10;
+            let currentPage = 1;
+            const totalPages = Math.ceil(apiCards.length / perPage);
+    
+            function showPage(page) {
+                apiCards.forEach((card, index) => {
+                    card.style.display = (index >= (page - 1) * perPage && index < page * perPage) ? 'block' : 'none';
+                });
+                document.getElementById('pageIndicator').textContent = `Page ${page} of ${totalPages}`;
+                document.getElementById('prevBtn').disabled = (page === 1);
+                document.getElementById('nextBtn').disabled = (page === totalPages);
+            }
+    
+            document.getElementById('prevBtn').addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    showPage(currentPage);
+                }
+            });
+    
+            document.getElementById('nextBtn').addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    showPage(currentPage);
+                }
+            });
+    
+            // Initialize
+            showPage(currentPage);
+        });
+    </script>
+    
+</head>
+<body>
+    <div class="container">
+        <div class="header-images">
+            <img src="https://i.imgur.com/UyJftqv.jpeg" alt="Vendora Left" class="side-logo">
+            <div class="center-text">
+                <h1 class="gradient-title">Vendora</h1>
+                <h2>Multi-Vendor E-commerce System</h2>
+            </div>
+            <img src="https://i.imgur.com/i9IE2hu.jpeg" alt="Vendora Right" class="side-logo">
+        </div>
+        
+        <div class="section">
+            <p>
+                <strong><u>Vendora</u>:</strong> is a scalable and feature-rich <em>multi-vendor e-commerce platform</em> that enables vendors to effortlessly create, manage, and scale their own digital storefronts within a unified ecosystem. It is designed to empower individual sellers while offering customers a seamless shopping experience across a wide variety of vendors and products.
+            </p>
+            <p>
+                <strong><u>For Vendors</u>:</strong> Vendora provides a dedicated dashboard for managing products, tracking orders, monitoring inventory, and updating shop details. Vendors can upload multiple images, tag products for search optimization, and handle customer interactions.
+            </p>
+            <p>
+                <strong><u>For Customers</u>:</strong> Customers can browse products across all vendors, apply filters and search queries, add items to a cart or wishlist, and place orders with ease.
+            </p>
+            <p>
+                <strong><u>For Admins</u>:</strong> An admin panel enables complete control of users, vendor verification, data monitoring, and platform maintenance.
+            </p>
+        </div>
+
+        <div class="section">
+            <h3>Key Features</h3>
+            <ul>
+                <li>User Registration, Login, and Password Management</li>
+                <li>Vendor Verification and Profile Setup</li>
+                <li>Product Listing with Multiple Images and Tags</li>
+                <li>Smart Search, Filter, and Categorization</li>
+                <li>Cart and Wishlist Functionality</li>
+                <li>Order Placement and Tracking</li>
+                <li>Admin Panel with Vendor Oversight</li>
+                <li>Email-based Password Recovery and Verification</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h3>Tech Stack</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Layer</th>
+                        <th>Technology</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Backend</td>
+                        <td>Django REST Framework</td>
+                        <td>Powerful API backend with authentication, permissions, and serialization</td>
+                    </tr>
+                    <tr>
+                        <td>Frontend</td>
+                        <td>Next.js (Planned)</td>
+                        <td>Modern React-based UI framework with SSR/SPA capability</td>
+                    </tr>
+                    <tr>
+                        <td>Database</td>
+                        <td>PostgreSQL</td>
+                        <td>Reliable relational database to store structured data</td>
+                    </tr>
+                    <tr>
+                        <td>Auth</td>
+                        <td>Token-Based (DRF Token or JWT)</td>
+                        <td>Secure authentication and session handling</td>
+                    </tr>
+                    <tr>
+                        <td>Media</td>
+                        <td>Cloud or Local</td>
+                        <td>Handles product images and logos</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section apis">
+            <h3>API Endpoints</h3>
+            <div id="api-container">
+            <div class="api-card">
+                <span class="post_method">POST</span> /user/registration/ — Register a new user
+            </div>
+            <div class="api-card">
+                <span class="post_method">POST</span> /user/login/ — Login a user
+            </div>
+            <div class="api-card">
+                <span class="post_method">POST</span> /vendor/verified/&lt;uuid:pk&gt;/ — Verify a vendor account
+            </div>
+            <div class="api-card">
+                <span class="get_method">GET</span> /user/list/ — Retrieve a filtered list of users
+            </div>
+            <div class="api-card">
+                <span class="get_method">GET</span> /single/user-view/&lt;uuid:pk&gt;/ — Retrieve details of a specific user by ID
+            </div>
+            <div class="api-card">
+                <span class="deletet_method">DELETE</span> /user/delete/&lt;uuid:pk&gt;/ — Delete a user account from the system
+            </div>
+            <div class="api-card">
+                <span class="get_method">GET</span> /login/user/profile/ — Retrieve the profile of the currently logged-in user
+            </div>
+            <div class="api-card">
+                <span class="get_method">GET</span> /vendor/profile/&lt;uuid:pk&gt;/ — Create a vendor profile
+            </div>
+            <div class="api-card">
+                <span class="update_method">UPDATE</span> /user/profile/update/&lt;uuid:pk&gt;/ — Update the user profile
+            </div>
+            <div class="api-card">
+                <span class="post_method">POST</span> /user/password-change/ — Change user password with the old password
+            </div>
+            <div class="api-card">
+                <span class="post_method">POST</span> /password/reset/link/ — Send password reset link to user's email
+            </div>
+            <div class="api-card">
+                <span class="post_method">POST</span> /user/password/reset-mail/&lt;uid&gt;/&lt;token&gt;/ — Reset password using token from email
+            </div>
+
+            
+            <div class="api-card">
+                <span class="post_method">POST</span> /category/create/ — Reset password using token from email
+            </div>
+            <div class="api-card">
+                <span class="get_method">GET</span> /category/list/ — Reset password using token from email
+            </div>
+            <div class="api-card">
+                <span class="update_method">UPDATE</span> /category/update/&lt;int:pk&gt;/— Reset password using token from email
+            </div>
+            <div class="api-card">
+                <span class="deletet_method">DELETE</span> /category/delete/&lt;int:pk&gt;/ — Reset password using token from email
+            </div>
+            <div class="api-card">
+                <span class="post_method">POST</span> /tags/create/ — Reset password using token from email
+            </div>
+            <div class="api-card">
+                <span class="get_method">GET</span> /tags/list/  — Reset password using token from email
+            </div>
+            <div class="api-card">
+                <span class="update_method">UPDATE</span> /tags/update/&lt;int:pk&gt;/ — Reset password using token from email
+            </div>
+            <div class="api-card">
+                <span class="deletet_method">DELETE</span> /tags/delete/&lt;int:pk&gt;/ — Reset password using token from email
+            </div>
+            <div class="api-card">
+                <span class="post_method">POST</span> /product/create/ — Reset password using token from email
+            </div>
+            <div class="api-card">
+                <span class="get_method">GET</span> /vendor-product/list/  — Reset password using token from email
+            </div>
+
+
+            <div class="api-card">
+                <span class="get_method">GET</span> /vendor-product/single-detail/&lt;uuid:product_id&gt;/  — Reset password using token from email
+            </div>
+            <div class="api-card">
+                <span class="deletet_method">DELETE</span> /vendor-product/delete/&lt;uuid:product_id&gt;/   — Reset password using token from email
+            </div>
+            <div class="api-card">
+                <span class="update_method">UPDATE</span> /vendor-product/update/&lt;uuid:product_id&gt;/  — Reset password using token from email
+            </div>
+            <div class="api-card">
+                <span class="get_method">GET</span> /customer/product-list/  — Reset password using token from email
+            </div>
+            <div class="api-card">
+                <span class="get_method">GET</span> /customer/product-detail-view/&lt;uuid:product_id&gt;/  — Reset password using token from email
+            </div>
+            <div class="api-card">
+                <span class="post_method">POST</span> /customer/product-search/  — Reset password using token from email
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button id="prevBtn">Previous</button>
+            <span id="pageIndicator"></span>
+            <button id="nextBtn">Next</button>
+        </div>
+        </div>
+    </div>
+</body>
+</html>

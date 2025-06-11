@@ -425,3 +425,12 @@ class UserPasswordChangeMailView(APIView):
         if serializer.is_valid(raise_exception=True):
             return Response({"msg": "Password Reset Sucessfully"})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+#########################################################################################
+
+from django.shortcuts import render
+
+
+def home_view(request):
+    return render(request, "emails/home.html")
