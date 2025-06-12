@@ -63,5 +63,5 @@ urlpatterns = [
         name="path to reset the password through the mail",
     ),
     ##############################################################################################
-    # path("", views.home_view),
+    path("", views.home_view),
 ]

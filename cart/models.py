@@ -29,3 +29,28 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.product.name} (x{self.quantity})"
+
+
+############################################################################################
+
+
+# this is the model class for the wishlist.
+class Wishlist(models.Model):
+    user = models.ForeignKey(
+        customeuser,
+        on_delete=models.CASCADE,
+        related_name="wishlist_items",
+        blank=True,
+        null=True,
+    )
+    product = models.ForeignKey(
+        m.Product, on_delete=models.CASCADE, related_name="wishlisted_by"
+    )
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "product")
+        ordering = ["-added_at"]
+
+    def __str__(self):
+        return f"{self.user} -> {self.product.name}"

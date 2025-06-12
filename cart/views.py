@@ -1,8 +1,15 @@
 from cart import models as m
-from cart.serializer import Cart_Item_Serilaizer, CartItemCreate_Serializer
+from cart.serializer import (
+    Cart_Item_Serilaizer,
+    CartItemCreate_Serializer,
+    Wishlist_serializer,
+    WishListData_Serializer,
+)
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 from product import models as pmd
 from rest_framework import generics, permissions, serializers, status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -64,13 +71,23 @@ class CartItemViewLoginUser(APIView):
         print(cart_item_data)
         if not cart_item_data.exists():
             return Response(
-                {"cart_items": [], "msg": "Your cart is empty."},
+                {
+                    "total_price": 0,
+                    "total_quantity": 0,
+                    "msg": "Your cart is empty.",
+                },
                 status=status.HTTP_200_OK,
             )
+
+        total_price = 0
+        for item in cart_item_data:
+            total_price += item.quantity * item.product.price
+
         serializer = Cart_Item_Serilaizer(cart_item_data, many=True)
         return Response(
             {
                 "cart_items": serializer.data,
+                "total_price": float(total_price),
                 "total_items": cart_item_data.count(),
             }
         )
@@ -170,3 +187,158 @@ class Cart_ItemUpdateView(APIView):
                 },
                 status=status.HTTP_202_ACCEPTED,
             )
+
+
+########################################################################################
+
+
+# this is the class to create the wishlist for the user.
+class WishlistCreateView(APIView):
+    renderer_classes = [UserRenderer]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format=None):
+        serializer = Wishlist_serializer(
+            data=request.data, context={"request": request}
+        )
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(
+                {
+                    "msg": "Product added to wishlist successfully.",
+                },
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+########################################################################################
+
+
+# this is the class to see the whishlist of the login user.
+class WishlistLoginUserView(APIView, PageNumberPagination):
+    renderer_classes = [UserRenderer]
+    permission_classes = [permissions.IsAuthenticated]
+    page_size = 5
+
+    def get(self, request, format=None):
+        user = request.user
+        wishlist_data = m.Wishlist.objects.filter(user=user).select_related("product")
+        if not wishlist_data.exists():
+            return Response(
+                {"msg": "Your wishlist is currently empty."},
+                status=status.HTTP_200_OK,
+            )
+        # here adding the pagination part.
+        paginated_data = self.paginate_queryset(wishlist_data, request, view=self)
+        serializer = WishListData_Serializer(paginated_data, many=True)
+        return self.get_paginated_response(
+            {
+                "data": serializer.data,
+                "wishlist_count": wishlist_data.count(),
+            },
+        )
+
+
+########################################################################################
+
+
+# this is the class to delete the wishlist.
+class WishlistDeleteView(APIView):
+    renderer_classes = [UserRenderer]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, format=None):
+        wishlist_ids = request.data.get("wishlist_ids", [])
+        if not wishlist_ids or not isinstance(wishlist_ids, list):
+            return Response(
+                {"msg": "Please provide a list of wishlist item IDs."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        # now deleting the data.
+        delete_count = 0
+        not_found_ids = []
+        with transaction.atomic():
+            for wl_id in wishlist_ids:
+                try:
+                    wishlist_data = m.Wishlist.objects.get(id=wl_id, user=request.user)
+                    wishlist_data.delete()
+                    delete_count += 1
+                except m.Wishlist.DoesNotExist:
+                    not_found_ids.append(wl_id)
+            return Response(
+                {
+                    "msg": f"{delete_count} item(s) removed from wishlist.",
+                    **({"not_found_ids": not_found_ids} if not_found_ids else {}),
+                },
+                status=status.HTTP_200_OK,
+            )
+
+
+########################################################################################
+
+
+# this is the class to shift the wishlist product into cart item.
+class WishlistIntoCartItem(APIView):
+    renderer_classes = [UserRenderer]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format=None):
+        items = request.data.get("items", [])
+        if not items or not isinstance(items, list):
+            return Response(
+                {"msg": "Please provide a list of wishlist item IDs."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Confirm it exists and belongs to the logged-in user.
+        moved_ids = []
+        not_found_ids = []
+        out_of_stock_ids = []
+        all_present_ids = []
+
+        with transaction.atomic():
+            for item in items:
+                wl_ids = item.get("wishlist_id")
+                quantity = item.get("quantity", 1)
+                try:
+                    wishlist_data = m.Wishlist.objects.get(id=wl_ids, user=request.user)
+                    product_data = wishlist_data.product
+
+                    # Check stock availability
+                    if product_data.stock < 1:
+                        out_of_stock_ids.append(str(wl_ids))
+                        continue
+
+                    # Move to cart: Add or update
+                    cart_item, created = m.CartItem.objects.get_or_create(
+                        user=request.user,
+                        product=product_data,
+                        defaults={"quantity": quantity},
+                    )
+
+                    # if the product is already present in the cart.
+                    if not created:
+                        cart_item.quantity += quantity
+                        cart_item.save()
+
+                    # Remove from wishlist
+                    wishlist_data.delete()
+                    moved_ids.append(str(wl_ids))
+
+                except m.Wishlist.DoesNotExist:
+                    not_found_ids.append(str(wl_ids))
+
+        return Response(
+            {
+                "msg": f"{len(moved_ids)} item(s) moved to cart successfully.",
+                "moved_ids": moved_ids,
+                **({"not_found_ids": not_found_ids} if not_found_ids else {}),
+                **({"out_of_stock_ids": out_of_stock_ids} if out_of_stock_ids else {}),
+                **({"all_present_ids": all_present_ids} if all_present_ids else {}),
+            },
+            status=status.HTTP_200_OK,
+        )

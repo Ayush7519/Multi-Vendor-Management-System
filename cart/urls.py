@@ -22,4 +22,25 @@ urlpatterns = [
         views.Cart_ItemUpdateView.as_view(),
         name="path to update the cart data",
     ),
+    ########################################################################################
+    path(
+        "wishlist/create/",
+        views.WishlistCreateView.as_view(),
+        name="path to create the wishlist for the user.",
+    ),
+    path(
+        "wishlist/login-user/",
+        views.WishlistLoginUserView.as_view(),
+        name="path to see the list of wishlist of the login user",
+    ),
+    path(
+        "wishlist/delete/",
+        views.WishlistDeleteView.as_view(),
+        name="path to delete the whishlist",
+    ),
+    path(
+        "wishlist-to-cartitem/",
+        views.WishlistIntoCartItem.as_view(),
+        name="shifting the product from the wishlist to cart item",
+    ),
 ]
